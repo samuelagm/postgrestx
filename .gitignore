@@ -1,0 +1,12 @@
+.pnpm-store/
+.turbo/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+.DS_Store
+.env
+node_modules/
+# Be explicit: ignore node_modules in all subdirectories too
+**/node_modules/
+.plans/
