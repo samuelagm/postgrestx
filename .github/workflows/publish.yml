@@ -145,7 +145,7 @@ jobs:
           pnpm -w -s build
 
           # Publish each package via npm (supports OIDC). Skip if version already exists
-          for PKG in packages/core packages/tanstack-query; do
+          for PKG in packages/core packages/tanstack; do
             echo "\nPublishing $PKG..."
             cd "$PKG"
             NAME=$(node -p "require('./package.json').name")
@@ -164,7 +164,7 @@ jobs:
         run: |
           set -euo pipefail
           CORE_NAME=$(node -p "require('./packages/core/package.json').name")
-          TQ_NAME=$(node -p "require('./packages/tanstack-query/package.json').name")
+          TQ_NAME=$(node -p "require('./packages/tanstack/package.json').name")
           echo "Verifying ${CORE_NAME} and ${TQ_NAME} are published..."
           tries=12
           delay=10
@@ -247,10 +247,10 @@ jobs:
               PKGS=("packages/core")
               ;;
             tanstack)
-              PKGS=("packages/tanstack-query")
+              PKGS=("packages/tanstack")
               ;;
             all|"")
-              PKGS=("packages/core" "packages/tanstack-query")
+              PKGS=("packages/core" "packages/tanstack")
               ;;
             *)
               echo "Invalid package input: '${{ inputs.package }}'. Use 'all', 'core', or 'tanstack'." >&2
@@ -299,10 +299,10 @@ jobs:
                 verify_pkg "$(node -p "require('./packages/core/package.json').name")" && exit 0
                 ;;
               tanstack)
-                verify_pkg "$(node -p "require('./packages/tanstack-query/package.json').name")" && exit 0
+                verify_pkg "$(node -p "require('./packages/tanstack/package.json').name")" && exit 0
                 ;;
               all|"")
-                if verify_pkg "$(node -p "require('./packages/core/package.json').name")" && verify_pkg "$(node -p "require('./packages/tanstack-query/package.json').name")"; then
+                if verify_pkg "$(node -p "require('./packages/core/package.json').name")" && verify_pkg "$(node -p "require('./packages/tanstack/package.json').name")"; then
                   exit 0
                 fi
                 ;;

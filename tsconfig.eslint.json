@@ -10,10 +10,10 @@
                 "packages/core/dist/*"
             ],
             "@postgrestx/tanstack": [
-                "packages/tanstack-query/src/index.ts"
+                "packages/tanstack/src/index.ts"
             ],
             "@postgrestx/tanstack/*": [
-                "packages/tanstack-query/src/*"
+                "packages/tanstack/src/*"
             ]
         }
     },
