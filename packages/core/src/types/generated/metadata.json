@@ -1,0 +1,45 @@
+{
+  "tables": [
+    {
+      "name": "people",
+      "primaryKey": "id",
+      "columns": [
+        {
+          "name": "id",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "age",
+          "type": "number",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "columns": [
+        {
+          "name": "id",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "done",
+          "type": "boolean",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

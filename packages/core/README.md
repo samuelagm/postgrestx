@@ -83,3 +83,17 @@ const axiosClient: HttpClient = {
   },
 }
 ```
+
+## Type generator (MVP)
+
+Generate basic table interfaces and operator helpers from a PostgREST OpenAPI JSON.
+
+```sh
+pnpm -w build
+pnpm --filter @postgrestx/core exec postgrestx-generate --input ./openapi.json --out ./packages/core/src/types/generated
+```
+
+Outputs:
+- `tables.d.ts` — interfaces per table/view
+- `operators.d.ts` — primitive-based operator types (placeholder)
+- `metadata.json` — table/column/primary key summary

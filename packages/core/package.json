@@ -13,6 +13,9 @@
       "require": "./dist/index.cjs"
     }
   },
+  "bin": {
+    "postgrestx-generate": "./dist/bin/generate-types.cjs"
+  },
   "files": [
     "dist"
   ],
@@ -22,7 +25,8 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist",
     "lint": "eslint .",
-  "test": "vitest run",
+    "test": "vitest run",
+    "generate:types": "node ./dist/bin/generate-types.js"
   },
   "peerDependencies": {
     "axios": "^1.7.9"

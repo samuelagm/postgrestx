@@ -1,0 +1,36 @@
+{
+  "swagger": "2.0",
+  "definitions": {
+    "people": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer"
+        }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "done": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
