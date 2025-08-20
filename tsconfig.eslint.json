@@ -1,0 +1,26 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@postgrestx/core": [
+                "packages/core/src/index.ts"
+            ],
+            "@postgrestx/core/*": [
+                "packages/core/src/*"
+            ],
+            "@postgrestx/tanstack-query": [
+                "packages/tanstack-query/src/index.ts"
+            ],
+            "@postgrestx/tanstack-query/*": [
+                "packages/tanstack-query/src/*"
+            ]
+        }
+    },
+    "include": [
+        "packages/**/src/**/*.ts",
+        "packages/**/test/**/*.ts",
+        "packages/**/bin/**/*.ts",
+        "eslint.config.mjs"
+    ]
+}

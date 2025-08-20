@@ -3,15 +3,25 @@
     "target": "ES2022",
     "module": "Preserve",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022"],
+    "baseUrl": ".",
+    "paths": {
+      "@postgrestx/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@postgrestx/core/*": [
+        "packages/core/src/*"
+      ],
+      "@postgrestx/tanstack-query": [
+        "packages/tanstack-query/src/index.ts"
+      ],
+      "@postgrestx/tanstack-query/*": [
+        "packages/tanstack-query/src/*"
+      ]
+    },
+    "lib": [
+      "ES2022"
+    ],
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true,
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": false,
-    "composite": false
   }
 }

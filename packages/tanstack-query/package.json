@@ -34,6 +34,7 @@
         "react-dom": "^18 || ^19"
     },
     "devDependencies": {
+        "@postgrestx/core": "workspace:*",
         "@eslint/js": "^9.33.0",
         "@types/node": "^22.17.2",
         "@types/react": "^18.3.11",

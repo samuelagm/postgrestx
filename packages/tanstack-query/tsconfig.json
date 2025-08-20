@@ -2,8 +2,23 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-  "rootDir": "."
-    ,"types": ["react"]
+    "rootDir": ".",
+    "types": [
+      "react"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@postgrestx/core": [
+        "../../packages/core/dist/index.d.ts"
+      ],
+      "@postgrestx/core/*": [
+        "../../packages/core/dist/*"
+      ]
+    }
   },
-  "include": ["src", "test", "vitest.config.ts"]
+  "include": [
+    "src",
+    "test",
+    "vitest.config.ts"
+  ]
 }
