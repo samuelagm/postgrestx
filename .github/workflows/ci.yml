@@ -50,10 +50,11 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Install docker compose plugin
+      - name: Install Docker Compose
         run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
+          # Docker Compose v2 is already installed on GitHub Actions runners
+          # Just verify it's available
+          docker compose version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
