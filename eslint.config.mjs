@@ -7,9 +7,9 @@ export default tseslint.config(
       '**/dist/**',
       '**/coverage/**',
       '**/*.config.*',
-  'eslint.config.mjs',
-  // Generated declaration files
-  'packages/**/src/types/generated/**',
+      'eslint.config.mjs',
+      // Generated declaration files
+      'packages/**/src/types/generated/**',
     ]
   },
   // Global, non-type-aware linting for all files by default
@@ -27,6 +27,22 @@ export default tseslint.config(
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  // Tests often need flexible types for mocks; relax some rules
+  {
+    files: ['packages/**/test/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { args: 'none', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/dot-notation': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
     },
   },
   // Relax strict-typed rules in OpenAPI introspection sources, which legitimately

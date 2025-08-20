@@ -5,6 +5,13 @@ export default defineConfig({
     coverage: {
       enabled: true,
       reporter: ['text', 'lcov'],
+      exclude: [
+        'src/postgrest/types.ts', // type-only declarations
+        'vitest.config.ts',
+        'tsup.config.ts',
+        'dist/**',
+        'src/types/generated/**',
+      ],
     },
     environment: 'node',
     testTimeout: 120_000,

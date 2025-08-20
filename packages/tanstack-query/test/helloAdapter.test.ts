@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { describe, expect, it, vi } from 'vitest'
 import { createQueryFns, createMutationFns, pgKey, stableStringify } from '../src'
 import type { PostgrestClient, QueryResult, QueryOptions, WriteOptions } from '@postgrestx/core'

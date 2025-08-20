@@ -214,7 +214,7 @@ describe('PostgREST e2e', () => {
         const outDir = resolve(tmpBase, 'out-src')
         writeFileSync(inputPath, openapiJson, 'utf8')
 
-        runGenerateTypes({ input: inputPath, out: outDir })
+        await runGenerateTypes({ input: inputPath, out: outDir })
 
         const tablesPath = resolve(outDir, 'tables.d.ts')
         const opsPath = resolve(outDir, 'operators.d.ts')
@@ -317,6 +317,240 @@ describe('PostgREST e2e', () => {
         expect(() => parseArgs(['node', 'cli'])).toThrow('exit:1')
         spy.mockRestore()
         err.mockRestore()
+    })
+
+    it('offline coverage: CLI reads from stdin via test hook', async () => {
+        // Fetch live OpenAPI once to use as stdin payload
+        const openapiUrl = `${httpBase}/`
+        const openapiJson: string = await new Promise((resolvePromise, reject) => {
+            const req = http.request(openapiUrl, { method: 'GET', headers: { Accept: 'application/json' } }, (res) => {
+                const chunks: Buffer[] = []
+                res.on('data', (c) => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)))
+                res.on('end', () => resolvePromise(Buffer.concat(chunks).toString('utf8')))
+            })
+            req.on('error', reject)
+            req.end()
+        })
+
+        const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-stdin-'))
+        const outDir = resolve(tmpBase, 'out')
+            ; (globalThis as unknown as { __PGX_READ_STDIN__?: () => Promise<string> }).__PGX_READ_STDIN__ = async () => openapiJson
+        try {
+            await runGenerateTypes({ input: '-', out: outDir })
+            expect(existsSync(resolve(outDir, 'tables.d.ts'))).toBe(true)
+            expect(existsSync(resolve(outDir, 'operators.d.ts'))).toBe(true)
+            expect(existsSync(resolve(outDir, 'metadata.json'))).toBe(true)
+        } finally {
+            delete (globalThis as unknown as { __PGX_READ_STDIN__?: () => Promise<string> }).__PGX_READ_STDIN__
+        }
+    })
+
+    it('offline coverage: CLI supports data: URLs (base64 and urlencoded)', async () => {
+        const samplePath = resolve(process.cwd(), '../../openapi.sample.json')
+        const sample = readFileSync(samplePath, 'utf8')
+        const base64 = Buffer.from(sample, 'utf8').toString('base64')
+        const urlencoded = encodeURIComponent(sample)
+
+        // base64
+        {
+            const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-data64-'))
+            const outDir = resolve(tmpBase, 'out')
+            await runGenerateTypes({ input: `data:application/json;base64,${base64}` as string, out: outDir })
+            expect(existsSync(resolve(outDir, 'tables.d.ts'))).toBe(true)
+        }
+        // urlencoded
+        {
+            const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-dataue-'))
+            const outDir = resolve(tmpBase, 'out')
+            await runGenerateTypes({ input: `data:application/json,${urlencoded}` as string, out: outDir })
+            expect(existsSync(resolve(outDir, 'operators.d.ts'))).toBe(true)
+        }
+    })
+
+    it('offline coverage: CLI httpGet success and error via local HTTP server', async () => {
+        // Use a local server to deterministically serve JSON and a 500 error
+        const samplePath = resolve(process.cwd(), '../../openapi.sample.json')
+        const body = readFileSync(samplePath, 'utf8')
+        const server = http.createServer((req, res) => {
+            if (req.url?.includes('/ok')) {
+                res.statusCode = 200
+                res.setHeader('Content-Type', 'application/json')
+                res.end(body)
+                return
+            }
+            res.statusCode = 500
+            res.end('nope')
+        })
+        await new Promise<void>((r) => server.listen(0, '127.0.0.1', () => r()))
+        const addr = server.address()
+        const port = typeof addr === 'object' && addr && 'port' in addr ? addr.port : 0
+        try {
+            const okUrl = `http://127.0.0.1:${port}/ok`
+            const badUrl = `http://127.0.0.1:${port}/bad`
+            const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-http-ok-'))
+            const outDir = resolve(tmpBase, 'out')
+            await runGenerateTypes({ input: okUrl, out: outDir })
+            expect(existsSync(resolve(outDir, 'metadata.json'))).toBe(true)
+
+            await expect(runGenerateTypes({ input: badUrl, out: outDir })).rejects.toThrow(/HTTP 500/)
+        } finally {
+            server.close()
+        }
+    })
+
+    it('offline coverage: CLI https path via request shim (no agent and with agent)', async () => {
+        const samplePath = resolve(process.cwd(), '../../openapi.sample.json')
+        const body = readFileSync(samplePath, 'utf8')
+
+        // Build a minimal https.request shim that triggers callback with a fake response
+        type HttpsReqFn = (url: string, options: unknown, cb: (res: { statusCode?: number; setEncoding: (enc: string) => void; on: (ev: 'data' | 'end', h: (c?: unknown) => void) => void }) => void) => { on: (ev: 'error', h: (e: Error) => void) => unknown; end: () => void }
+
+        function makeShim(status: number, payload: string): HttpsReqFn {
+            return (_url, _options, cb) => {
+                const res = {
+                    statusCode: status,
+                    setEncoding: () => undefined,
+                    on: (ev: 'data' | 'end', h: (c?: unknown) => void) => {
+                        if (ev === 'data') setImmediate(() => h(payload))
+                        if (ev === 'end') setImmediate(() => h())
+                    },
+                }
+                setImmediate(() => cb(res))
+                return {
+                    on: () => undefined,
+                    end: () => { /* nothing */ },
+                }
+            }
+        }
+
+        const httpsUrl = 'https://example.test/spec'
+        const tmpBase1 = mkdtempSync(join(tmpdir(), 'pgx-https-noagent-'))
+        const outDir1 = resolve(tmpBase1, 'out')
+            ; (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__ = { httpsRequest: makeShim(200, body) }
+        try {
+            await runGenerateTypes({ input: httpsUrl, out: outDir1 })
+            expect(existsSync(resolve(outDir1, 'tables.d.ts'))).toBe(true)
+        } finally {
+            delete (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__
+        }
+
+        const tmpBase2 = mkdtempSync(join(tmpdir(), 'pgx-https-agent-'))
+        const outDir2 = resolve(tmpBase2, 'out')
+            ; (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__ = { httpsRequest: makeShim(200, body) }
+            ; (globalThis as unknown as { __PGX_HTTPS_AGENT__?: unknown }).__PGX_HTTPS_AGENT__ = {}
+        try {
+            await runGenerateTypes({ input: httpsUrl, out: outDir2 })
+            expect(existsSync(resolve(outDir2, 'operators.d.ts'))).toBe(true)
+        } finally {
+            delete (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__
+            delete (globalThis as unknown as { __PGX_HTTPS_AGENT__?: unknown }).__PGX_HTTPS_AGENT__
+        }
+    })
+
+    it('offline coverage: CLI https path non-2xx via request shim', async () => {
+        const httpsUrl = 'https://example.test/spec'
+            ; (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__ = {
+                httpsRequest: (_url: string, _options: unknown, cb: (res: { statusCode?: number; setEncoding: (enc: string) => void; on: (ev: 'data' | 'end', h: (c?: unknown) => void) => void }) => void) => {
+                    const res = {
+                        statusCode: 500,
+                        setEncoding: () => undefined,
+                        on: (ev: 'data' | 'end', h: (c?: unknown) => void) => { if (ev === 'end') setImmediate(() => h()) },
+                    }
+                    setImmediate(() => cb(res))
+                    return { on: () => undefined, end: () => undefined }
+                }
+            }
+        try {
+            await expect(runGenerateTypes({ input: httpsUrl, out: join(tmpdir(), 'pgx-out-ignore') })).rejects.toThrow(/HTTP 500/)
+        } finally {
+            delete (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__
+        }
+    })
+
+    it('offline coverage: CLI httpGet override hook success and error', async () => {
+        const samplePath = resolve(process.cwd(), '../../openapi.sample.json')
+        const body = readFileSync(samplePath, 'utf8')
+            // success path
+            ; (globalThis as unknown as { __PGX_HTTP_GET__?: (u: string) => Promise<string> }).__PGX_HTTP_GET__ = async () => body
+        try {
+            const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-http-override-ok-'))
+            const outDir = resolve(tmpBase, 'out')
+            await runGenerateTypes({ input: 'https://ignored.example/spec', out: outDir })
+            expect(existsSync(resolve(outDir, 'metadata.json'))).toBe(true)
+        } finally {
+            delete (globalThis as unknown as { __PGX_HTTP_GET__?: (u: string) => Promise<string> }).__PGX_HTTP_GET__
+        }
+
+        // error path
+        ; (globalThis as unknown as { __PGX_HTTP_GET__?: (u: string) => Promise<string> }).__PGX_HTTP_GET__ = async () => { throw new Error('forced') }
+        try {
+            await expect(runGenerateTypes({ input: 'https://ignored.example/spec', out: join(tmpdir(), 'pgx-out') }))
+                .rejects.toThrow('forced')
+        } finally {
+            delete (globalThis as unknown as { __PGX_HTTP_GET__?: (u: string) => Promise<string> }).__PGX_HTTP_GET__
+        }
+    })
+
+    it('offline coverage: CLI http path error event via request shim', async () => {
+        // Shim http.request to emit error instead of responding
+        ; (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpRequest?: unknown } }).__PGX_REQUEST_SHIM__ = {
+            httpRequest: () => {
+                let onErr: ((e: Error) => void) | null = null
+                return {
+                    on: (_ev: 'error', h: (e: Error) => void) => { onErr = h; return undefined },
+                    end: () => { setImmediate(() => onErr?.(new Error('socket error'))) }
+                }
+            }
+        }
+        try {
+            await expect(runGenerateTypes({ input: 'http://example.test/spec', out: join(tmpdir(), 'pgx-out') }))
+                .rejects.toThrow('socket error')
+        } finally {
+            delete (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpRequest?: unknown } }).__PGX_REQUEST_SHIM__
+        }
+    })
+
+    it('offline coverage: CLI data URL invalid (missing comma) errors', async () => {
+        await expect(runGenerateTypes({ input: 'data:application/json;base64XXXX', out: join(tmpdir(), 'pgx-out') }))
+            .rejects.toThrow(/Invalid data URL: missing comma/)
+    })
+
+    it('offline coverage: CLI reads from real stdin stream (no override)', async () => {
+        const samplePath = resolve(process.cwd(), '../../openapi.sample.json')
+        const sample = readFileSync(samplePath, 'utf8')
+        const tmpBase = mkdtempSync(join(tmpdir(), 'pgx-stdin-real-'))
+        const outDir = resolve(tmpBase, 'out')
+        const p = runGenerateTypes({ input: '-', out: outDir })
+        setImmediate(() => {
+            ; (process.stdin as unknown as { emit: (ev: string, ...args: unknown[]) => boolean }).emit('data', sample)
+                ; (process.stdin as unknown as { emit: (ev: string, ...args: unknown[]) => boolean }).emit('end')
+        })
+        await p
+        expect(existsSync(resolve(outDir, 'tables.d.ts'))).toBe(true)
+        expect(existsSync(resolve(outDir, 'operators.d.ts'))).toBe(true)
+        expect(existsSync(resolve(outDir, 'metadata.json'))).toBe(true)
+    })
+
+    it('offline coverage: CLI https path non-2xx with agent via request shim', async () => {
+        const httpsUrl = 'https://example.test/spec'
+            ; (globalThis as unknown as { __PGX_HTTPS_AGENT__?: unknown }).__PGX_HTTPS_AGENT__ = {}
+            ; (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__ = {
+                httpsRequest: (_url: string, _options: unknown, cb: (res: { statusCode?: number; setEncoding: (enc: string) => void; on: (ev: 'data' | 'end', h: (c?: unknown) => void) => void }) => void) => {
+                    const res = {
+                        statusCode: 503,
+                        setEncoding: () => undefined,
+                        on: (ev: 'data' | 'end', h: (c?: unknown) => void) => { if (ev === 'end') setImmediate(() => h()) },
+                    }
+                    setImmediate(() => cb(res))
+                    return { on: () => undefined, end: () => undefined }
+                }
+            }
+        try {
+            await expect(runGenerateTypes({ input: httpsUrl, out: join(tmpdir(), 'pgx-out-ignore') })).rejects.toThrow(/HTTP 503/)
+        } finally {
+            delete (globalThis as unknown as { __PGX_REQUEST_SHIM__?: { httpsRequest?: unknown } }).__PGX_REQUEST_SHIM__
+            delete (globalThis as unknown as { __PGX_HTTPS_AGENT__?: unknown }).__PGX_HTTPS_AGENT__
+        }
     })
 
     it('offline coverage: loadSpec error path', () => {

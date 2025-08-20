@@ -115,7 +115,7 @@ export function useList<Table = unknown>(
     queryKey: key,
     queryFn: async () => {
       const res = await client.select<Table[]>(tableName, { ...args, headers: mapProfileHeaders(args) })
-  return { data: res.data, total: res.total, range: res.range }
+      return { data: res.data, total: res.total, range: res.range }
     },
     ...options,
   })
@@ -139,7 +139,7 @@ export function useItem<Table = unknown>(
         limit: 1,
         filters: [{ column: pkColumn, op: 'eq', value: pk }, ...(rest?.filters ?? [])],
       })
-  const row = Array.isArray(res.data) && res.data.length > 0 ? res.data[0] : null
+      const row = Array.isArray(res.data) && res.data.length > 0 ? res.data[0] : null
       return row
     },
     ...options,
@@ -152,7 +152,7 @@ export function useInsert<Inserted = unknown, InsertInput = unknown>(
 ) {
   const client = usePostgrestClient()
   return useMutation<Inserted, unknown, InsertInput>({
-  mutationFn: async (input) => (await client.insert<Inserted>(tableName, input)).data,
+    mutationFn: async (input) => (await client.insert<Inserted>(tableName, input)).data,
     ...options,
   })
 }
@@ -162,10 +162,10 @@ export function useUpdate<Updated = unknown, PK extends PrimaryKey = PrimaryKey,
   options?: UseMutationOptions<Updated, unknown, { pk: PK; patch: Partial<Table>; pkColumn?: string }>,
 ) {
   const client = usePostgrestClient()
-  return useMutation<Updated, unknown, { pk: PK; patch: Partial<Table>; pkColumn?: string}>({
+  return useMutation<Updated, unknown, { pk: PK; patch: Partial<Table>; pkColumn?: string }>({
     mutationFn: async (vars) => {
       const col = vars.pkColumn ?? 'id'
-  const res = await client.update<Updated>(tableName, vars.patch, { filters: [{ column: col, op: 'eq', value: vars.pk }] })
+      const res = await client.update<Updated>(tableName, vars.patch, { filters: [{ column: col, op: 'eq', value: vars.pk }] })
       return res.data
     },
     ...options,
@@ -192,7 +192,7 @@ export function useUpsert<Upserted = unknown, UpsertInput = unknown>(
 ) {
   const client = usePostgrestClient()
   return useMutation<Upserted, unknown, UpsertInput>({
-  mutationFn: async (input) => (await client.upsert<Upserted>(tableName, input)).data,
+    mutationFn: async (input) => (await client.upsert<Upserted>(tableName, input)).data,
     ...options,
   })
 }
