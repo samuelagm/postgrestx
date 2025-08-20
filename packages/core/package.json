@@ -1,6 +1,6 @@
 {
   "name": "@postgrestx/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "main": "./dist/index.cjs",
@@ -27,6 +27,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rimraf dist",
+  "prepack": "pnpm run build",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "vitest run --reporter=verbose test-e2e",

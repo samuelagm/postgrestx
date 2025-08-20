@@ -1,6 +1,6 @@
 {
     "name": "@postgrestx/tanstack-query",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "private": false,
     "type": "module",
     "main": "./dist/index.cjs",
@@ -24,11 +24,12 @@
         "build": "tsup",
         "dev": "tsup --watch",
         "clean": "rimraf dist",
+        "prepack": "pnpm run build",
         "lint": "eslint .",
         "test": "vitest run"
     },
     "peerDependencies": {
-        "@postgrestx/core": "workspace:*",
+        "@postgrestx/core": ">=0.1.0",
         "@tanstack/react-query": "^5",
         "react": "^18 || ^19",
         "react-dom": "^18 || ^19"
