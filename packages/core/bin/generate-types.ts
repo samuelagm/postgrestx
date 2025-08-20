@@ -4,13 +4,14 @@
 */
 import { resolve } from 'node:path'
 import { mkdirSync, writeFileSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
 import { loadSpec } from '../src/openapi/loadSpec'
 import { introspectSpec } from '../src/openapi/schemaIntrospect'
 import { emitOperatorsDTS, emitTablesDTS, toMetadataJSON } from '../src/openapi/tableMetadata'
 
 interface Args { input: string; out: string }
 
-function parseArgs(argv: string[]): Args {
+export function parseArgs(argv: string[]): Args {
   let input = ''
   let out = ''
   for (let i = 2; i < argv.length; i++) {
@@ -31,8 +32,8 @@ function parseArgs(argv: string[]): Args {
   return { input, out }
 }
 
-async function main() {
-  const { input, out } = parseArgs(process.argv)
+export function runGenerateTypes(args: Args) {
+  const { input, out } = args
   const spec = loadSpec(resolve(process.cwd(), input))
   const intro = introspectSpec(spec)
 
@@ -50,7 +51,17 @@ async function main() {
   console.log(`Generated types to ${outDir}`)
 }
 
-main().catch((e) => {
-  console.error(e)
-  process.exit(1)
-})
+export async function main() {
+  const args = parseArgs(process.argv)
+  runGenerateTypes(args)
+}
+
+// Only run when executed as a script, not when imported for tests
+/* c8 ignore start */
+if (import.meta.url === pathToFileURL(process.argv[1]!).href) {
+  main().catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+}
+/* c8 ignore stop */

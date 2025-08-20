@@ -3,7 +3,8 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      reporter: ['text', 'lcov'],
+  enabled: true,
+  reporter: ['text', 'lcov'],
     },
   environment: 'jsdom'
   },

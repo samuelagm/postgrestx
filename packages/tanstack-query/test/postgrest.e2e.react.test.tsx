@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import http from 'node:http'
 import React from 'react'
 import { PostgrestClient, createFetchHttpClient } from '@postgrestx/core'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, type InfiniteData } from '@tanstack/react-query'
 import { render, waitFor } from '@testing-library/react'
-import { PostgrestProvider, useInsert, useList, useUpdate, useDelete } from '../src'
+import { PostgrestProvider, useInsert, useList, useUpdate, useDelete, useInfiniteList } from '../src'
 
 function waitForReady(url: string, timeoutMs = 30000, intervalMs = 500): Promise<void> {
   const start = Date.now()
@@ -77,6 +77,35 @@ describe('@postgrestx/tanstack-query e2e', () => {
 
     await waitFor(() => {
       expect(getByText(/count:/)).toBeTruthy()
+    }, { timeout: 30_000 })
+  })
+
+  it('supports useInfiniteList pagination', async () => {
+    if (!haveEndpoints) return
+    function InfApp() {
+      const q = useInfiniteList<{ id: number; name: string }>('people', { select: 'id,name', order: 'id.asc', pageSize: 2 })
+      const [called, setCalled] = React.useState(false)
+      React.useEffect(() => {
+        if (q.isSuccess && !called) {
+          setCalled(true)
+          q.fetchNextPage()
+        }
+      }, [q.isSuccess, called])
+      const pages = (q.data as InfiniteData<{ items: { id: number; name: string }[]; nextFrom?: number }> | undefined)?.pages ?? []
+      const totalItems = pages.reduce((acc: number, p) => acc + p.items.length, 0)
+      return React.createElement('div', null, q.isPending ? 'inf:loading' : `infCount:${totalItems}`)
+    }
+
+    const queryClient = new QueryClient()
+    const { getByText } = render(
+      React.createElement(QueryClientProvider, { client: queryClient },
+        React.createElement(PostgrestProvider, { client: new PostgrestClient(httpBase, createFetchHttpClient()), children: React.createElement(InfApp) })
+      )
+    )
+
+    // After fetching first page (2) and next page (1), we expect 3 items from seed
+    await waitFor(() => {
+      expect(getByText('infCount:3')).toBeTruthy()
     }, { timeout: 30_000 })
   })
 })

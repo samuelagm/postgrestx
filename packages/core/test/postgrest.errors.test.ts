@@ -43,4 +43,10 @@ describe('PostgrestClient error normalization', () => {
     const client = new PostgrestClient('https://example.com', http)
     await expect(client.insert('people', {})).rejects.toMatchObject({ status: 500, message: 'Internal Server Error' })
   })
+
+  it('falls back to default message when body is other types', async () => {
+    const http = new MockHttp(() => ({ status: 503, headers: {}, data: 1234 }))
+    const client = new PostgrestClient('https://example.com', http)
+    await expect(client.select('x')).rejects.toMatchObject({ status: 503, message: 'PostgREST error' })
+  })
 })
