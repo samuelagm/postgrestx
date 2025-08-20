@@ -1,3 +1,5 @@
+// Axios adapter export
+export { createAxiosHttpClient } from './http/axiosHttpClient'
 /**
  * Public entry for @postgrestx/tanstack
  */

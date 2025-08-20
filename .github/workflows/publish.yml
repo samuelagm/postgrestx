@@ -160,28 +160,6 @@ jobs:
             cd - >/dev/null
           done
 
-      - name: Verify packages on npm
-        run: |
-          set -euo pipefail
-          CORE_NAME=$(node -p "require('./packages/core/package.json').name")
-          TQ_NAME=$(node -p "require('./packages/tanstack/package.json').name")
-          echo "Verifying ${CORE_NAME} and ${TQ_NAME} are published..."
-          tries=12
-          delay=10
-          for i in $(seq 1 $tries); do
-            core_v=$(npm view "${CORE_NAME}" version || true)
-            tq_v=$(npm view "${TQ_NAME}" version || true)
-            if [ -n "${core_v}" ] && [ -n "${tq_v}" ]; then
-              echo "Published versions: ${CORE_NAME}=${core_v}, ${TQ_NAME}=${tq_v}"
-              exit 0
-            fi
-            echo "Not visible yet (attempt ${i}/${tries}). Waiting ${delay}s..."
-            sleep ${delay}
-          done
-          echo "Packages not visible on npm after verification attempts." >&2
-          echo "If this persists, ensure NPM_TOKEN has publish rights to the @postgrestx org or configure Trusted Publishing." >&2
-          exit 1
-
   # Direct publish-only job for manual dispatch when dealing with auth issues
   publish_direct:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_only }}
@@ -273,43 +251,3 @@ jobs:
             npm publish --access public --provenance || { echo "Failed to publish $NAME@$VERSION"; exit 1; }
             cd - >/dev/null
           done
-
-      - name: Verify packages on npm (dispatch)
-        run: |
-          set -euo pipefail
-          echo "Verifying packages are published..."
-          tries=12
-          delay=10
-          # Respect package selection for verification
-          verify_pkg() {
-            local pkg="$1"
-            local v
-            v=$(npm view "$pkg" version || true)
-            if [ -n "$v" ]; then
-              echo "Published version for $pkg: $v"
-              return 0
-            else
-              return 1
-            fi
-          }
-
-          for i in $(seq 1 $tries); do
-            case "${{ inputs.package }}" in
-              core)
-                verify_pkg "$(node -p "require('./packages/core/package.json').name")" && exit 0
-                ;;
-              tanstack)
-                verify_pkg "$(node -p "require('./packages/tanstack/package.json').name")" && exit 0
-                ;;
-              all|"")
-                if verify_pkg "$(node -p "require('./packages/core/package.json').name")" && verify_pkg "$(node -p "require('./packages/tanstack/package.json').name")"; then
-                  exit 0
-                fi
-                ;;
-            esac
-            echo "Not visible yet (attempt ${i}/${tries}). Waiting ${delay}s..."
-            sleep ${delay}
-          done
-          echo "Packages not visible on npm after verification attempts." >&2
-          echo "If this persists, ensure NPM_TOKEN has publish rights to the @postgrestx org or configure Trusted Publishing." >&2
-          exit 1

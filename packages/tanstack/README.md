@@ -10,18 +10,20 @@ Peer deps you must have in your app:
 - `@tanstack/react-query`
 - `@postgrestx/core`
 
+
 ## Setup
 
 Wrap your app with both providers:
 
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { PostgrestProvider } from '@postgrestx/tanstack'
-import { PostgrestClient, createFetchHttpClient } from '@postgrestx/core'
+import { PostgrestProvider, createAxiosHttpClient } from '@postgrestx/tanstack'
+import { PostgrestClient } from '@postgrestx/core'
+import axios from 'axios'
 
 const client = new PostgrestClient({
 	baseUrl: 'https://your-postgrest.example.com',
-	http: createFetchHttpClient(),
+	http: createAxiosHttpClient(axios), // <-- use axios as HTTP client
 })
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -33,6 +35,33 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
 	)
 }
 ```
+
+Or, to use the default fetch client:
+
+```tsx
+import { createFetchHttpClient } from '@postgrestx/core'
+// ...
+const client = new PostgrestClient({
+	baseUrl: 'https://your-postgrest.example.com',
+	http: createFetchHttpClient(),
+})
+```
+## Using Axios as HTTP Client
+
+You can use [axios](https://axios-http.com/) as a drop-in replacement for fetch by importing and using `createAxiosHttpClient`:
+
+```tsx
+import { createAxiosHttpClient } from '@postgrestx/tanstack'
+import axios from 'axios'
+
+const client = new PostgrestClient({
+	baseUrl: 'https://your-postgrest.example.com',
+	http: createAxiosHttpClient(axios),
+})
+```
+
+This enables all axios features (interceptors, advanced config, etc) while maintaining fetch compatibility.
+
 
 ## Hooks
 

@@ -1,6 +1,6 @@
 # PostgRESTX — TypeScript SDK & React adapters for PostgREST
 
-[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/releases) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TQ npm](https://img.shields.io/npm/v/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack) [![core downloads](https://img.shields.io/npm/dw/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![tq downloads](https://img.shields.io/npm/dw/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack) [![Open Issues](https://img.shields.io/github/issues/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/issues)
+[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TQ npm](https://img.shields.io/npm/v/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack)
 
 PostgRESTX provides a TypeScript-first SDK to interact with PostgREST servers, plus React utilities that integrate PostgREST with TanStack Query (React Query v5).
 
@@ -23,7 +23,7 @@ Key features
 Packages in this workspace
 
 - `packages/core` — Framework-agnostic PostgREST client and low-level HTTP helpers.
-- `packages/tanstack-query` — React + TanStack Query integration: providers, hooks and helpers.
+- `packages/tanstack` — React + TanStack Query integration: providers, hooks and helpers.
 
 
 Quickstart (developer)

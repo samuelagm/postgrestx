@@ -37,7 +37,8 @@
         "@postgrestx/core": ">=0.1.0",
         "@tanstack/react-query": "^5",
         "react": "^18 || ^19",
-        "react-dom": "^18 || ^19"
+        "react-dom": "^18 || ^19",
+        "axios": ">=1.6.0"
     },
     "devDependencies": {
         "@postgrestx/core": "workspace:*",
@@ -55,6 +56,7 @@
         "tsup": "^8.5.0",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.40.0",
-        "vitest": "^3.2.4"
+        "vitest": "^3.2.4",
+        "axios": "^1.6.0"
     }
 }
