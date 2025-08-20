@@ -1,6 +1,6 @@
 # PostgRESTX — TypeScript SDK & React adapters for PostgREST
 
-[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/releases) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TQ npm](https://img.shields.io/npm/v/@postgrestx/tanstack-query?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack-query) [![core downloads](https://img.shields.io/npm/dw/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![tq downloads](https://img.shields.io/npm/dw/@postgrestx/tanstack-query?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack-query) [![Open Issues](https://img.shields.io/github/issues/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/issues)
+[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/releases) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TQ npm](https://img.shields.io/npm/v/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack) [![core downloads](https://img.shields.io/npm/dw/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![tq downloads](https://img.shields.io/npm/dw/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack) [![Open Issues](https://img.shields.io/github/issues/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/issues)
 
 PostgRESTX provides a TypeScript-first SDK to interact with PostgREST servers, plus React utilities that integrate PostgREST with TanStack Query (React Query v5).
 
@@ -49,7 +49,7 @@ pnpm -w build
 How to use the React adapter (short)
 
 1. Create a `PostgrestClient` from `@postgrestx/core` and an HTTP implementation (e.g. `createFetchHttpClient`).
-2. Wrap your app with TanStack's `QueryClientProvider` and `PostgrestProvider` from `@postgrestx/tanstack-query`.
+2. Wrap your app with TanStack's `QueryClientProvider` and `PostgrestProvider` from `@postgrestx/tanstack`.
 
 See `packages/tanstack-query/README.md` for full examples and the available hooks.
 

@@ -1,4 +1,4 @@
-# @postgrestx/tanstack-query
+# @postgrestx/tanstack
 
 React utilities and hooks to use PostgREST (via `@postgrestx/core`) with TanStack Query v5.
 
@@ -16,7 +16,7 @@ Wrap your app with both providers:
 
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { PostgrestProvider } from '@postgrestx/tanstack-query'
+import { PostgrestProvider } from '@postgrestx/tanstack'
 import { PostgrestClient, createFetchHttpClient } from '@postgrestx/core'
 
 const client = new PostgrestClient({
@@ -57,7 +57,7 @@ Helpers:
 `useInfiniteList` pages through a table using Content-Range. Provide a `pageSize` and (optionally) `initialFrom`.
 
 ```tsx
-import { useInfiniteList } from '@postgrestx/tanstack-query'
+import { useInfiniteList } from '@postgrestx/tanstack'
 
 function People() {
 	const {
@@ -94,7 +94,7 @@ Notes:
 ## Invalidation helpers
 
 ```ts
-import { invalidateTable, invalidateRpc } from '@postgrestx/tanstack-query'
+import { invalidateTable, invalidateRpc } from '@postgrestx/tanstack'
 
 await invalidateTable(queryClient, 'people')
 await invalidateRpc(queryClient, 'add_todo')

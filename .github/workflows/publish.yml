@@ -15,7 +15,7 @@ on:
         options:
           - all
           - core
-          - tanstack-query
+          - tanstack
         default: all
   push:
     tags:
@@ -163,17 +163,20 @@ jobs:
       - name: Verify packages on npm
         run: |
           set -euo pipefail
-          echo "Verifying @postgrestx/core and @postgrestx/tanstack-query are published..."
-          tries=5
+          CORE_NAME=$(node -p "require('./packages/core/package.json').name")
+          TQ_NAME=$(node -p "require('./packages/tanstack-query/package.json').name")
+          echo "Verifying ${CORE_NAME} and ${TQ_NAME} are published..."
+          tries=12
+          delay=10
           for i in $(seq 1 $tries); do
-            core_v=$(npm view @postgrestx/core version || true)
-            tq_v=$(npm view @postgrestx/tanstack-query version || true)
+            core_v=$(npm view "${CORE_NAME}" version || true)
+            tq_v=$(npm view "${TQ_NAME}" version || true)
             if [ -n "${core_v}" ] && [ -n "${tq_v}" ]; then
-              echo "Published versions: core=${core_v}, tanstack-query=${tq_v}"
+              echo "Published versions: ${CORE_NAME}=${core_v}, ${TQ_NAME}=${tq_v}"
               exit 0
             fi
-            echo "Not visible yet (attempt ${i}/${tries}). Waiting..."
-            sleep 5
+            echo "Not visible yet (attempt ${i}/${tries}). Waiting ${delay}s..."
+            sleep ${delay}
           done
           echo "Packages not visible on npm after verification attempts." >&2
           echo "If this persists, ensure NPM_TOKEN has publish rights to the @postgrestx org or configure Trusted Publishing." >&2
@@ -243,14 +246,14 @@ jobs:
             core)
               PKGS=("packages/core")
               ;;
-            tanstack-query)
+            tanstack)
               PKGS=("packages/tanstack-query")
               ;;
             all|"")
               PKGS=("packages/core" "packages/tanstack-query")
               ;;
             *)
-              echo "Invalid package input: '${{ inputs.package }}'. Use 'all', 'core', or 'tanstack-query'." >&2
+              echo "Invalid package input: '${{ inputs.package }}'. Use 'all', 'core', or 'tanstack'." >&2
               exit 1
               ;;
           esac
@@ -275,7 +278,8 @@ jobs:
         run: |
           set -euo pipefail
           echo "Verifying packages are published..."
-          tries=5
+          tries=12
+          delay=10
           # Respect package selection for verification
           verify_pkg() {
             local pkg="$1"
@@ -292,19 +296,19 @@ jobs:
           for i in $(seq 1 $tries); do
             case "${{ inputs.package }}" in
               core)
-                verify_pkg "@postgrestx/core" && exit 0
+                verify_pkg "$(node -p "require('./packages/core/package.json').name")" && exit 0
                 ;;
-              tanstack-query)
-                verify_pkg "@postgrestx/tanstack-query" && exit 0
+              tanstack)
+                verify_pkg "$(node -p "require('./packages/tanstack-query/package.json').name")" && exit 0
                 ;;
               all|"")
-                if verify_pkg "@postgrestx/core" && verify_pkg "@postgrestx/tanstack-query"; then
+                if verify_pkg "$(node -p "require('./packages/core/package.json').name")" && verify_pkg "$(node -p "require('./packages/tanstack-query/package.json').name")"; then
                   exit 0
                 fi
                 ;;
             esac
-            echo "Not visible yet (attempt ${i}/${tries}). Waiting..."
-            sleep 5
+            echo "Not visible yet (attempt ${i}/${tries}). Waiting ${delay}s..."
+            sleep ${delay}
           done
           echo "Packages not visible on npm after verification attempts." >&2
           echo "If this persists, ensure NPM_TOKEN has publish rights to the @postgrestx org or configure Trusted Publishing." >&2

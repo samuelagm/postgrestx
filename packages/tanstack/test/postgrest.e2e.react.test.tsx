@@ -37,9 +37,9 @@ function App() {
   const del = useDelete<number>('people')
 
   React.useEffect(() => {
-    ;(async () => {
-  const row = await insert.mutateAsync({ name: 'Eve', age: 31 })
-  const id = (row as { id: number }).id
+    ; (async () => {
+      const row = await insert.mutateAsync({ name: 'Eve', age: 31 })
+      const id = (row as { id: number }).id
       await update.mutateAsync({ pk: id, patch: { age: 32 } })
       await del.mutateAsync({ pk: id })
     })()
@@ -48,7 +48,7 @@ function App() {
   return React.createElement('div', null, listData ? `count:${listData.total ?? listData.data.length}` : 'loading')
 }
 
-describe('@postgrestx/tanstack-query e2e', () => {
+describe('@postgrestx/tanstack e2e', () => {
   let httpBase = 'http://localhost'
   let adminBase = 'http://localhost'
   let haveEndpoints = false
@@ -64,7 +64,7 @@ describe('@postgrestx/tanstack-query e2e', () => {
     }
   }, 120_000)
 
-  afterAll(() => {})
+  afterAll(() => { })
 
   it('lists people and performs insert/update/delete mutations', async () => {
     if (!haveEndpoints) return

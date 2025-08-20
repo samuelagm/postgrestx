@@ -1,5 +1,5 @@
 /**
- * Public entry for @postgrestx/tanstack-query
+ * Public entry for @postgrestx/tanstack
  */
 
 import type { QueryOptions, WriteOptions } from '@postgrestx/core'

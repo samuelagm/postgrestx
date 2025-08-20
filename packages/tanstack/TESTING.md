@@ -1,4 +1,4 @@
-# Testing @postgrestx/tanstack-query
+# Testing @postgrestx/tanstack
 
 This package includes React e2e tests that can run against a live PostgREST instance. By default, these tests are skipped unless the required environment variables are set.
 
@@ -25,7 +25,7 @@ docker compose -f infra/dev/docker-compose.yml port postgrest 3001
 ```sh
 export PGX_API_URL=http://localhost:<port-for-3000>
 export PGX_ADMIN_URL=http://localhost:<port-for-3001>
-pnpm --filter @postgrestx/tanstack-query test
+pnpm --filter @postgrestx/tanstack test
 ```
 
 4. When finished, stop the stack:
