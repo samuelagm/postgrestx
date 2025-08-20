@@ -16,6 +16,11 @@
     "files": [
         "dist"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/samuelagm/postgrestx",
+        "directory": "packages/tanstack-query"
+    },
     "publishConfig": {
         "access": "public"
     },
