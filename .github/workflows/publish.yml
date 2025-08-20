@@ -75,6 +75,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+  # Uncomment the next line and switch to trusted publishing when the npm org is configured
+  # id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,9 +94,35 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify npm auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm whoami || { echo "npm auth failed. Ensure NPM_TOKEN is set and has publish rights."; exit 1; }
+
       - name: Publish packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # Ensure we're logged in for npm publish via pnpm
           pnpm -w -s -r publish --access public --no-git-checks
+
+      - name: Verify packages on npm
+        run: |
+          set -euo pipefail
+          echo "Verifying @postgrestx/core and @postgrestx/tanstack-query are published..."
+          tries=5
+          for i in $(seq 1 $tries); do
+            core_v=$(npm view @postgrestx/core version || true)
+            tq_v=$(npm view @postgrestx/tanstack-query version || true)
+            if [ -n "${core_v}" ] && [ -n "${tq_v}" ]; then
+              echo "Published versions: core=${core_v}, tanstack-query=${tq_v}"
+              exit 0
+            fi
+            echo "Not visible yet (attempt ${i}/${tries}). Waiting..."
+            sleep 5
+          done
+          echo "Packages not visible on npm after verification attempts." >&2
+          echo "If this persists, ensure NPM_TOKEN has publish rights to the @postgrestx org or configure Trusted Publishing." >&2
+          exit 1
