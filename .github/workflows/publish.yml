@@ -124,12 +124,19 @@ jobs:
           TOKEN_PRESENT=0
           if [ -n "${{ secrets.NPM_TOKEN }}" ]; then
             TOKEN_PRESENT=1
+            # Expose token via both env vars to satisfy .npmrc and npm CLI
+            export NPM_TOKEN="${{ secrets.NPM_TOKEN }}"
             export NODE_AUTH_TOKEN="${{ secrets.NPM_TOKEN }}"
           fi
 
           if [ "$TOKEN_PRESENT" -eq 1 ]; then
             echo "NPM_TOKEN detected: running npm whoami to verify auth..."
-            npm whoami || { echo "npm auth failed. Ensure NPM_TOKEN has publish rights to @postgrestx."; exit 1; }
+            if npm whoami; then
+              echo "npm whoami succeeded with token."
+            else
+              echo "npm whoami failed (401). Will attempt publish via OIDC Trusted Publishing by unsetting token."
+              unset NPM_TOKEN NODE_AUTH_TOKEN
+            fi
           else
             echo "No NPM_TOKEN provided. Will rely on npm OIDC Trusted Publishing for npm publish."
           fi
@@ -210,12 +217,19 @@ jobs:
           TOKEN_PRESENT=0
           if [ -n "${{ secrets.NPM_TOKEN }}" ]; then
             TOKEN_PRESENT=1
+            # Expose token via both env vars to satisfy .npmrc and npm CLI
+            export NPM_TOKEN="${{ secrets.NPM_TOKEN }}"
             export NODE_AUTH_TOKEN="${{ secrets.NPM_TOKEN }}"
           fi
 
           if [ "$TOKEN_PRESENT" -eq 1 ]; then
             echo "NPM_TOKEN detected: running npm whoami to verify auth..."
-            npm whoami || { echo "npm auth failed. Ensure NPM_TOKEN has publish rights to @postgrestx."; exit 1; }
+            if npm whoami; then
+              echo "npm whoami succeeded with token."
+            else
+              echo "npm whoami failed (401). Will attempt publish via OIDC Trusted Publishing by unsetting token."
+              unset NPM_TOKEN NODE_AUTH_TOKEN
+            fi
           else
             echo "No NPM_TOKEN provided. Will rely on npm OIDC Trusted Publishing for npm publish."
           fi
