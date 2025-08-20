@@ -1,8 +1,9 @@
 # PostgRESTX — TypeScript SDK & React adapters for PostgREST
 
+[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml)
+
 PostgRESTX provides a TypeScript-first SDK to interact with PostgREST servers, plus React utilities that integrate PostgREST with TanStack Query (React Query v5).
 
-The repository is organised as a pnpm monorepo so the core client logic can be reused across adapters and consumers.
 
 Why this project exists
 
@@ -10,10 +11,6 @@ Why this project exists
 - Provide strongly-typed request helpers, encoding/decoding and consistent error handling.
 - Offer React hooks and providers which wire PostgREST semantics into TanStack Query's caching and pagination features.
 
-Packages in this workspace
-
-- `packages/core` — Framework-agnostic PostgREST client and low-level HTTP helpers.
-- `packages/tanstack-query` — React + TanStack Query integration: providers, hooks and helpers.
 
 Key features
 
@@ -22,6 +19,12 @@ Key features
 - Infinite list pagination using Content-Range headers.
 - Cache keys and invalidation helpers for TanStack Query (`pgKey`, `invalidateTable`, `invalidateRpc`).
 - SSR-friendly keys and serialisable cache data.
+
+Packages in this workspace
+
+- `packages/core` — Framework-agnostic PostgREST client and low-level HTTP helpers.
+- `packages/tanstack-query` — React + TanStack Query integration: providers, hooks and helpers.
+
 
 Quickstart (developer)
 
