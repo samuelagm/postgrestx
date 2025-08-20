@@ -19,10 +19,10 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Enable Corepack and install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.12.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -36,5 +36,45 @@ jobs:
       - name: Unit tests
         run: pnpm -w -s test
 
+  e2e:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable Corepack and install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.12.0 --activate
+
+      - name: Install docker compose plugin
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: E2E tests (core)
-        run: pnpm -w -s test:e2e
+        # use a small wrapper to retry in case of transient docker/flaky network issues
+        run: |
+          set -euxo pipefail
+          retries=2
+          count=0
+          until [ "$count" -gt "$retries" ]
+          do
+            if pnpm -w -s test:e2e; then
+              exit 0
+            fi
+            count=$((count+1))
+            echo "E2E failed, retrying ($count/$retries)..."
+            sleep 3
+          done
+          echo "E2E failed after $retries retries"
+          exit 1
