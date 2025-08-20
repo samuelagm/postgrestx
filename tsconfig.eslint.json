@@ -4,10 +4,10 @@
         "baseUrl": ".",
         "paths": {
             "@postgrestx/core": [
-                "packages/core/src/index.ts"
+                "packages/core/dist/index.d.ts"
             ],
             "@postgrestx/core/*": [
-                "packages/core/src/*"
+                "packages/core/dist/*"
             ],
             "@postgrestx/tanstack-query": [
                 "packages/tanstack-query/src/index.ts"

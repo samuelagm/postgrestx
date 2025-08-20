@@ -29,14 +29,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build
+        run: pnpm -w -s build
+
       - name: Lint
         run: pnpm -w -s lint
 
       - name: Test
         run: pnpm -w -s test
-
-      - name: Build
-        run: pnpm -w -s build
 
   e2e:
     needs: build
