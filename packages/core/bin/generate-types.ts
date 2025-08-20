@@ -40,7 +40,7 @@ async function main() {
   mkdirSync(outDir, { recursive: true })
 
   const tablesDts = emitTablesDTS(intro)
-  const opsDts = emitOperatorsDTS(intro)
+  const opsDts = emitOperatorsDTS()
   const metadata = JSON.stringify(toMetadataJSON(intro), null, 2)
 
   writeFileSync(resolve(outDir, 'tables.d.ts'), tablesDts)

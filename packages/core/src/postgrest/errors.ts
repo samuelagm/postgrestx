@@ -31,14 +31,14 @@ export class PostgrestError extends Error {
 
 export function normalizeError(res: HttpResponse<unknown>): PostgrestError {
   const status = res.status
-  const body = res.data as unknown
+  const body = res.data
 
   // Common PostgREST error shape
   const fromBody = ((): PostgrestErrorPayload => {
     if (body && typeof body === 'object') {
       const b = body as Record<string, unknown>
-      const message = typeof b.message === 'string' ? b.message : typeof b.error === 'string' ? (b.error as string) : undefined
-      const code = typeof b.code === 'string' ? (b.code as string) : undefined
+      const message = typeof b.message === 'string' ? b.message : typeof b.error === 'string' ? b.error : undefined
+      const code = typeof b.code === 'string' ? b.code : undefined
       const details = b.details
       const hint = b.hint
       return { code, message, details, hint }

@@ -25,8 +25,9 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist",
     "lint": "eslint .",
-    "test": "vitest run",
-    "generate:types": "node ./dist/bin/generate-types.js"
+  "test": "vitest run",
+  "test:e2e": "vitest run --reporter=verbose test-e2e",
+  "generate:types": "node ./dist/bin/generate-types.cjs"
   },
   "peerDependencies": {
     "axios": "^1.7.9"

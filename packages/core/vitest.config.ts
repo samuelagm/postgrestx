@@ -5,6 +5,8 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'lcov'],
     },
-    environment: 'node'
+  environment: 'node',
+  testTimeout: 120_000,
+  hookTimeout: 120_000,
   },
 })
