@@ -219,7 +219,7 @@ export function useInfiniteList<Table = unknown>(
     queryKey: key,
     initialPageParam: params.initialFrom ?? 0,
     queryFn: async ({ pageParam }) => {
-      const from = (pageParam as number | undefined) ?? params.initialFrom ?? 0
+      const from = pageParam as number
       const to = from + params.pageSize - 1
       const res = await client.select<Table[]>(tableName, {
         ...params,
