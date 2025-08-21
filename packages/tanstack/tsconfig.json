@@ -6,6 +6,10 @@
     "types": [
       "react"
     ],
+    "lib": [
+      "DOM",
+      "ES2022"
+    ],
     "baseUrl": ".",
     "paths": {
       "@postgrestx/core": [
