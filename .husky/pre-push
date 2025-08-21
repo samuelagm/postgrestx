@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Run tests before pushing to ensure nothing is broken
+echo "🧪 Running tests before push..."
+pnpm test
+
+# Run build to make sure everything compiles
+echo "🏗️  Building packages..."
+pnpm build
