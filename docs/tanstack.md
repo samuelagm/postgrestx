@@ -4,22 +4,22 @@ Comprehensive React integration for PostgREST built on TanStack Query v5. Provid
 
 ## At a Glance
 
-| Hook / Utility           | Purpose                           | Returns / Notes                                    |
-| ------------------------ | --------------------------------- | -------------------------------------------------- | ----------------------------- | ------- |
-| `useList`                | Fetch list + total/range metadata | `query.data`: `{ data: T[]; total: number          | null; range: [number, number] | null }` |
-| `useInfiniteList`        | Infinite scroll pagination        | `pages[]` each: `{ items: T[]; nextFrom: number    | null }`                       |
-| `useItem`                | Single row by primary key         | `T \| null`                                        |
-| `useInsert`              | Insert rows                       | Mutation (returns inserted rows if representation) |
-| `useUpdate`              | Patch by primary key              | Mutation                                           |
-| `useDelete`              | Delete by primary key             | Mutation (void)                                    |
-| `useUpsert`              | Upsert rows                       | Mutation                                           |
-| `useRpc`                 | Execute RPC (mutation form)       | Mutation (data shape depends on RPC)               |
-| `invalidateTable`        | Invalidate all queries for table  | Utility                                            |
-| `invalidateRpc`          | Invalidate RPC queries            | Utility                                            |
-| `pgKey`                  | Cache key builder                 | Stable, namespaced keys                            |
-| `createQueryFns`         | Factory for custom queryFns       | Build custom query functions                       |
-| `createInfiniteQueryFns` | Infinite query page loaders       | Build custom infinite queryFns                     |
-| `createMutationFns`      | Mutation function factory         | Build reusable mutation fns                        |
+| Hook / Utility           | Purpose                           | Returns / Notes                                                            |
+| ------------------------ | --------------------------------- | -------------------------------------------------------------------------- | ------- |
+| `useList`                | Fetch list + total/range metadata | `query.data` with `{ data: T[]; total?: number; range?: [number,number] }` |
+| `useInfiniteList`        | Infinite scroll pagination        | Pages: `{ items: T[]; nextFrom: number                                     | null }` |
+| `useItem`                | Single row by primary key         | `T \| null`                                                                |
+| `useInsert`              | Insert rows                       | Mutation (inserted rows if representation)                                 |
+| `useUpdate`              | Patch by primary key              | Mutation                                                                   |
+| `useDelete`              | Delete by primary key             | Mutation (void)                                                            |
+| `useUpsert`              | Upsert rows                       | Mutation                                                                   |
+| `useRpc`                 | Execute RPC (mutation form)       | Mutation (RPC result)                                                      |
+| `invalidateTable`        | Invalidate all queries for table  | Utility                                                                    |
+| `invalidateRpc`          | Invalidate RPC queries            | Utility                                                                    |
+| `pgKey`                  | Cache key builder                 | Stable namespaced keys                                                     |
+| `createQueryFns`         | Factory for custom queryFns       | Build query fns                                                            |
+| `createInfiniteQueryFns` | Infinite query page loaders       | Build infinite query fns                                                   |
+| `createMutationFns`      | Mutation function factory         | Build mutation fns                                                         |
 
 ## Provider Setup
 
