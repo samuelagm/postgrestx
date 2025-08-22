@@ -1,71 +1,55 @@
-# PostgRESTX — TypeScript SDK & React adapters for PostgREST
+# PostgRESTX
 
-[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TQ npm](https://img.shields.io/npm/v/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack)
+[![CI](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml/badge.svg)](https://github.com/samuelagm/postgrestx/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/samuelagm/postgrestx?style=flat-square)](https://github.com/samuelagm/postgrestx/blob/master/LICENSE) [![Core npm](https://img.shields.io/npm/v/@postgrestx/core?style=flat-square)](https://www.npmjs.com/package/@postgrestx/core) [![TanStack npm](https://img.shields.io/npm/v/@postgrestx/tanstack?style=flat-square)](https://www.npmjs.com/package/@postgrestx/tanstack) [![Docs](https://img.shields.io/badge/docs-vitepress-blue?style=flat-square)](https://samuelagm.github.io/postgrestx/)
 
-PostgRESTX provides a TypeScript-first SDK to interact with PostgREST servers, plus React utilities that integrate PostgREST with TanStack Query (React Query v5).
+TypeScript SDK & React adapters for PostgREST.
 
+👉 **Full documentation & guides:** https://samuelagm.github.io/postgrestx/
 
-Why this project exists
+---
 
-- Make PostgREST easier to consume from modern TypeScript applications.
-- Provide strongly-typed request helpers, encoding/decoding and consistent error handling.
-- Offer React hooks and providers which wire PostgREST semantics into TanStack Query's caching and pagination features.
+## Packages
 
+| Package                | Description                            | Docs                                                                                                                                   |
+| ---------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `@postgrestx/core`     | Framework‑agnostic PostgREST client    | [Core Guide](https://samuelagm.github.io/postgrestx/core) / [API](https://samuelagm.github.io/postgrestx/api/core/src/README)          |
+| `@postgrestx/tanstack` | React + TanStack Query hooks & helpers | [React Guide](https://samuelagm.github.io/postgrestx/tanstack) / [API](https://samuelagm.github.io/postgrestx/api/tanstack/src/README) |
 
-Key features
+---
 
-- TypeScript-first client and helpers for building PostgREST requests.
-- React hooks: `useList`, `useItem`, `useInfiniteList`, `useInsert`, `useUpdate`, `useDelete`, `useUpsert`, `useRpc`.
-- Infinite list pagination using Content-Range headers.
-- Cache keys and invalidation helpers for TanStack Query (`pgKey`, `invalidateTable`, `invalidateRpc`).
-- SSR-friendly keys and serialisable cache data.
-
-Packages in this workspace
-
-- `packages/core` — Framework-agnostic PostgREST client and low-level HTTP helpers.
-- `packages/tanstack` — React + TanStack Query integration: providers, hooks and helpers.
-
-
-Quickstart (developer)
-
-1. Install dependencies (requires pnpm):
+## Install (snippet)
 
 ```bash
-pnpm install
+pnpm add @postgrestx/core
+# React usage
+pnpm add @postgrestx/tanstack @tanstack/react-query react react-dom
 ```
 
-2. Run tests (Vitest):
+## Quick Example
+
+```ts
+import { PostgrestClient, createFetchHttpClient } from '@postgrestx/core'
+const client = new PostgrestClient(
+  'https://example.com',
+  createFetchHttpClient(),
+)
+await client.select('users', { select: 'id,name', limit: 10 })
+```
+
+For React hooks (`useList`, `useItem`, mutations, infinite queries) see the React guide.
+
+---
+
+## Contributing
+
+PRs welcome. Please see the docs for architecture notes. Run tests with:
 
 ```bash
 pnpm -w test
 ```
 
-3. Build packages (tsup):
+---
 
-```bash
-pnpm -w build
-```
+## License
 
-How to use the React adapter (short)
-
-1. Create a `PostgrestClient` from `@postgrestx/core` and an HTTP implementation (e.g. `createFetchHttpClient`).
-2. Wrap your app with TanStack's `QueryClientProvider` and `PostgrestProvider` from `@postgrestx/tanstack`.
-
-See `packages/tanstack-query/README.md` for full examples and the available hooks.
-
-Development notes & conventions
-
-- Package manager: pnpm (workspaces enabled).
-- Build tool: tsup per-package.
-- Tests: Vitest with configs in each package.
-- Linting: ESLint with TypeScript rules.
-
-Contributing
-
-- Open issues or PRs for bugs and feature requests.
-- Keep PRs small and add tests for behavior changes.
-- Consider adding or updating package READMEs with practical examples.
-
-License
-
-- MIT — see [LICENSE](./LICENSE).
+MIT © Contributors — see [LICENSE](./LICENSE)

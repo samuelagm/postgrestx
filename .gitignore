@@ -10,3 +10,6 @@ node_modules/
 # Be explicit: ignore node_modules in all subdirectories too
 **/node_modules/
 .plans/
+# VitePress caches & build output
+docs/.vitepress/cache/
+docs/.vitepress/dist/

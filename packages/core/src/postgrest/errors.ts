@@ -1,5 +1,19 @@
 /**
- * Error normalization for PostgREST responses
+ * Error normalization for PostgREST responses.
+ *
+ * Converts raw HTTP responses into {@link PostgrestError} capturing common
+ * PostgREST fields like `code`, `message`, `details`, and `hint`.
+ *
+ * @example Handling errors
+ * ```ts
+ * try {
+ *   await client.insert('users', { name: 'Ada' })
+ * } catch (e) {
+ *   if (e instanceof PostgrestError) {
+ *     console.error(e.code, e.message)
+ *   }
+ * }
+ * ```
  */
 
 import type { HttpResponse } from './http'
@@ -18,7 +32,12 @@ export class PostgrestError extends Error {
   readonly status: number
   readonly response?: HttpResponse<unknown>
 
-  constructor(payload: PostgrestErrorPayload & { status: number; response?: HttpResponse<unknown> }) {
+  constructor(
+    payload: PostgrestErrorPayload & {
+      status: number
+      response?: HttpResponse<unknown>
+    },
+  ) {
     super(payload.message ?? 'PostgREST error')
     this.name = 'PostgrestError'
     this.code = payload.code
@@ -37,7 +56,12 @@ export function normalizeError(res: HttpResponse<unknown>): PostgrestError {
   const fromBody = ((): PostgrestErrorPayload => {
     if (body && typeof body === 'object') {
       const b = body as Record<string, unknown>
-      const message = typeof b.message === 'string' ? b.message : typeof b.error === 'string' ? b.error : undefined
+      const message =
+        typeof b.message === 'string'
+          ? b.message
+          : typeof b.error === 'string'
+            ? b.error
+            : undefined
       const code = typeof b.code === 'string' ? b.code : undefined
       const details = b.details
       const hint = b.hint

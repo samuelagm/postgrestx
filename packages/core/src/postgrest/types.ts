@@ -1,5 +1,15 @@
 /**
- * Core types for PostgREST client
+ * Core types for PostgREST client.
+ *
+ * Use these to build advanced queries.
+ *
+ * @example Building filters
+ * ```ts
+ * const filters: Filter[] = [
+ *   { column: 'status', op: 'eq', value: 'active' },
+ *   { column: 'age', op: 'gte', value: 18 }
+ * ]
+ * ```
  */
 
 export type Operator =
