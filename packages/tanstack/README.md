@@ -2,7 +2,7 @@
 
 React + TanStack Query hooks for PostgREST.
 
-👉 Full React guide: https://samuelagm.github.io/postgrestx/tanstack • API: https://samuelagm.github.io/postgrestx/api/tanstack/src/README
+👉 Full React guide: https://samuelagm.github.io/postgrestx/tanstack
 
 ---
 
