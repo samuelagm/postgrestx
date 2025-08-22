@@ -17,7 +17,7 @@ TypeScript SDK & React adapters for PostgREST.
 
 ---
 
-## Install (snippet)
+## Install
 
 ```bash
 pnpm add @postgrestx/core
