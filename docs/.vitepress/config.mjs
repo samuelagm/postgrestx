@@ -6,7 +6,8 @@ export default defineConfig({
     lang: 'en-US',
     base: '/postgrestx/', // GitHub Pages repo name
     head: [
-        ['meta', { name: 'theme-color', content: '#0d1117' }]
+        ['meta', { name: 'theme-color', content: '#0d1117' }],
+        ['link', { rel: 'icon', type: 'image/svg+xml', href: '/postgrestx/favicon.svg' }],
     ],
     themeConfig: {
         nav: [

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title" fill="none">
+  <title id="title">PostgRESTX PX Icon</title>
+  <rect width="64" height="64" rx="12" fill="#0D1117"/>
+  <!-- Letters container shifted left for centering -->
+  <g transform="translate(-4 0)">
+    <!-- Letter P -->
+    <path fill="#FFFFFF" d="M18 16h8c8 0 14 4 14 12s-6 12-14 12h-4v8h-8V16h4Zm8 16c3.3 0 6-1.7 6-4s-2.7-4-6-4h-4v8h4Z"/>
+    <!-- Letter X -->
+    <g filter="url(#glow)">
+      <path d="M36 18 L54 46" stroke="url(#gradX)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M54 18 L36 46" stroke="url(#gradX)" stroke-width="8" stroke-linecap="round"/>
+    </g>
+  </g>
+  <!-- Gradient definition for X -->
+  <defs>
+    <linearGradient id="gradX" x1="36" y1="18" x2="54" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF6A00"/>
+      <stop offset="1" stop-color="#FF2D55"/>
+    </linearGradient>
+    <filter id="glow" x="30" y="12" width="30" height="40" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+</svg>
